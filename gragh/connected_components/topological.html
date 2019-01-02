@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>グラフアルゴリズムメモ</title>
+		<style type="text/css">
+		<!-- 		
+		html, body {
+ 			width:100%;
+ 			height:100%;
+		}
+		body {
+ 			display:table;
+ 			text-align:center;
+		}
+		#google_center_div {
+ 			display:table-cell;
+		}
+		#google_image_div {
+ 			display:inline-block;
+		}
+
+		div.left{
+			text-align: left;
+			position: relative;
+  			left:15em;
+		}
+
+		pre{
+			text-align: left;
+			position: relative;;
+			left:-10em;
+		}
+
+		h2 {
+  			counter-increment: count-h2;
+  			counter-reset: count-h3;
+  			text-align: left;
+  			position: relative;
+  			left:5em;
+		}
+
+		h2::before {
+ 			 content: counter(count-h2);
+ 			 align-content: left;
+		}
+		h3 {
+ 			counter-increment: count-h3;
+  			counter-reset: count-h4;
+  			text-align: left;
+  			position: relative;
+  			left:7.5em;
+		}
+		h3::before {
+  			content: counter(count-h2)'.'counter(count-h3);
+		}
+		h4 {
+  			counter-increment: count-h4;
+  			text-align: left;
+  			position: relative;
+  			left:10em;
+		}
+		h4::before {
+  			content: counter(count-h2)'.'counter(count-h3)'.'counter(count-h4);
+		}
+		.background-gray{
+    		background: #f0f0f0;
+    		padding: 30px;
+    		margin: 5px;
+		}
+		.background-blue{
+    		background: #EAF6FD;
+    		padding: 30px;
+    		margin: 5px;
+   			border-radius: 5px;
+		}	
+
+		.background-dashed{
+    		border: 3px dashed #444444;
+    		padding: 20px;
+    		margin: 5px;
+		}	
+		-->
+		</style>
+	</head>
+
+	<body>
+		<center><h1> トポロジカルソートと強連結性分解 </h1></center>
+		<h2> トポロジカルソート </h2>
+		<div class='background-blue'> グラフ理論において、有向非巡回グラフ（英: directed acyclic graph, DAG）の各ノードを順序付けして、<br>どのノードもその出力辺の先のノードより前にくるように並べることである。有向非巡回グラフは必ずトポロジカルソートすることができる</div>
+		アルゴリズム : O(V+E),stackを使う方法とdfsを使う方法がある。(本質的には同じ) 同時に閉路の判定が行える。
+
+		<div class="left">
+		<br> ソースコード
+		<hr><br>
+			used配列 : 頂点に既に訪れたか。{ 0 : 未訪問, 1 : dfstreeの親であり訪問済み, 2 :訪問済み。かつトポロジカル順序決定済み。}<br>
+			edge配列 : 隣接リスト <br>
+			sorted_ver配列 : トポロジカル順の逆順に頂点をappend
+		<br>
+			<tt><pre>
+				char dfs(long node){ // 深さ優先探索 
+					if (used[node] == 1) return (-1); //dfstreeの親にも同一nodeが存在 == 閉路が存在。
+					if (used[node] == 2) return 0;    //終着。
+					used[node] = 1;
+					REP(i,edge[node].size()) {
+						if(dfs(edge[node][i]) == (-1)) return (-1); // 閉路検出の伝播
+					}
+					used[node] = 2;					  //トポロジカル順序の確定と配列への格納
+					sorted_ver.push_back(node); 	  
+					return 0;
+				}
+
+				int main(void) {
+					REP(i,V) {
+						if (used[i] == 2) {
+							if (dfs(i) == (-1))    // 閉路の場合
+							else print sorted_ver; // 結果の表示
+					}
+				}
+			</pre></tt>
+		</div>
+
+		<h2> 強連結性分解 </h2>
+		<div class='background-blue'> 
+			頂点集合Sが強連結である <=> 頂点の部分集合Sにおいて、「任意の2頂点u,vが連結である」という条件を満たしている。<br>
+			頂点集合Sに新たに頂点集合を加えると、強連結でなくなる <=> Sは強連結成分である。
+		</div>
+		強連結成分を一つの頂点に潰すと、DAG(有向非巡回グラフ)となる。==> トポロジカルソートが必ず行える。(重要な性質)
+
+		<br>アルゴリズム : O(|V|+|E|) , dfsを順方向に行い、dfsの止まった頂点を順番に記録。
+		<br>その後、止まったのが遅い頂点から、辺を逆向きにしてdfs。この時に連結である要素が強連結成分である。
+
+		<div class="left">
+			<br> ソースコード
+		</div>
+
+
+	</body>
+
+</html>
